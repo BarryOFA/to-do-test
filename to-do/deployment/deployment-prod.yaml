@@ -1,0 +1,59 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bl-seed-organization
+  namespace: vida-camara
+  labels:
+    app: bl-seed-organization
+spec:
+  selector:
+    matchLabels:
+      app: bl-seed-organization
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bl-seed-organization
+    spec:
+      containers:
+      - name: bl-seed-organization
+        image: docker.quirisoft.cl/prod/bl-seed-organization:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: comm
+          protocol: TCP
+        resources:
+           requests:
+             memory: "260Mi"
+             cpu: "300m"
+           limits:
+             memory: "500Mi"
+             cpu: "600m"
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 30
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bl-seed-organization-svc
+  namespace: vida-camara
+spec:
+  selector:
+    app: bl-seed-organization
+  ports:
+    - name: http-bl-seed-organization-port
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+  sessionAffinity: None
+  type: ClusterIP

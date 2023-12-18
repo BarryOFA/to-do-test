@@ -1,0 +1,19 @@
+ARG NODE_VERSION=18.18.2
+ARG ALPINE_VERSION=3.18
+
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
+
+RUN node -v
+RUN npm install -g yarn @nestjs/cli --force
+RUN yarn -v
+
+WORKDIR /app
+ENV NODE_ENV development
+COPY ./package.json ./.npmrc ./.yarnclean ./
+RUN yarn install
+COPY . .
+RUN yarn build
+
+ENV PORT 3000
+EXPOSE $PORT
+CMD ["yarn", "start:dev"]

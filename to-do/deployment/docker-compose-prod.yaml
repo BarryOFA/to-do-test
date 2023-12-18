@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  bl-seed-organization:
+    image: docker.quirisoft.cl/prod/bl-seed-organization:latest
+    container_name: bl-seed-organization
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+    restart: unless-stopped
+    networks:
+      - default
